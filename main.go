@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -136,7 +137,17 @@ func authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			}
 			return jwtSecret, nil
 		})
-		if err != nil || !token.Valid {
+		if err != nil {
+			if errors.Is(err, jwt.ErrTokenExpired) {
+				return c.JSON(http.StatusUnauthorized, echo.Map{
+					"error": "token expired",
+				})
+			}
+			return c.JSON(http.StatusUnauthorized, echo.Map{
+				"error": "invalid token",
+			})
+		}
+		if !token.Valid {
 			return c.JSON(http.StatusUnauthorized, echo.Map{
 				"error": "invalid token",
 			})
