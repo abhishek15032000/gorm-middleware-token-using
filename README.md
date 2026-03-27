@@ -15,6 +15,7 @@ A beginner-friendly Go web application that demonstrates building a secure REST 
 1. **Registration (`POST /register`)**: Users provide a name, email, and password. The application hashes the password using `bcrypt` and creates a new user record in the database.
 2. **Login (`POST /login`)**: Users provide their email and password. The application verifies the credentials and returns a signed **JWT Token**.
 3. **Protected Route (`GET /user/profile`)**: Requires the client to send the generated JWT token in the `Authorization` header (`Bearer <token>`). A custom Auth Middleware validates the token before allowing access to the profile data.
+4. **Graceful Shutdown**: Intercepts OS signals to allow active requests to finish before the server stops, safely releasing the network port (prevents "port already in use" errors during reloads).
 
 ## 🚀 Getting Started
 
@@ -58,6 +59,7 @@ The behavior of Air is controlled by the `.air.toml` file generated at the proje
 - **`exclude_dir`**: Directories Air shouldn't monitor (e.g., `tmp` which holds the compiled binary).
 - **`cmd`**: The command used to compile your application.
 - **`bin`**: The built executable that Air will run.
+- **`kill_delay` & `send_interrupt`**: Configured to allow the Go server to gracefully shut down on Windows by sending an interrupt signal. This prevents "address already in use" errors across reloads.
 
 ### Running with Air
 If you haven't installed Air yet:
